@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome{% endblock%}
+{% block activeh %} class="active" {% endblock %}
+{% block activehn %} class="active" {% endblock %}
+{% block content %}
+<div class="col-md-8">
+    <h1>Hello Everyone</h1>
+    <p>Welcome to the site</p>
+    {% if user.is_authenticated %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.post }}
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+    {% endif %}
+    <h2>{{ text }}</h2>
+    {% for post in posts %}
+        <h2>{{ post.post }}</h2>
+        <p>Posted by {{ post.user.get_full_name }} on {{ post.created }}</p>
+    {% endfor %}
+</div>
+{% if user.is_authenticated %}
+<div class="col-md-4">
+    <h1>Other People</h1>
+    {% for user in users%}
+        <a href="{% url 'profile_with_pk' pk=user.pk %}">
+            <h3>{{ user.username }}</h3>
+        </a>
+        {% if not user in friends %}
+        <a href="{% url 'change_friends' operation='add' pk=user.pk %}">
+            <button type="button" class="btn btn-success">Add Friend</button>
+        </a>
+        {% endif %}
+    {% endfor %}
+    <h2>Friends</h2>
+    {% for friend in friends%}
+        <a href="{% url 'profile_with_pk' pk=user.pk %}">
+            <h3>{{ friend.username }}</h3>
+        </a>
+        <a href="{% url 'change_friends' operation='remove' pk=friend.pk %}">
+        <button type="button" class="btn btn-default">Remove Friend</button>
+        </a>
+    {% endfor %}
+    {% endif %}
+</div>
+
+{% endblock %}
